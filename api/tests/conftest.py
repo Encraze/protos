@@ -19,6 +19,11 @@ def _set_test_env(monkeypatch):
         ),
     )
     monkeypatch.setenv("APP_ENVIRONMENT", "test")
+    monkeypatch.setenv("APP_AUTH_MODE", "stub")
+    monkeypatch.setenv("APP_AUTH_SEED", "false")
+    monkeypatch.setenv("APP_SESSION_SECRET", "test-secret-32-chars-minimum-aaaaaaaa")
+    monkeypatch.setenv("APP_FRONTEND_URL", "http://test-frontend")
+    monkeypatch.setenv("APP_API_PUBLIC_URL", "")
 
 
 @pytest_asyncio.fixture

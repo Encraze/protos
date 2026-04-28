@@ -13,6 +13,7 @@ dependencies = [
     "alembic>=1.14,<2.0",
     "structlog>=24.4,<25.0",
     "httpx>=0.27,<0.28",
+    "itsdangerous>=2.2,<3.0",
 ]
 
 [project.optional-dependencies]
