@@ -5,6 +5,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 Environment = Literal["dev", "test", "stage", "prod"]
 AuthMode = Literal["stub", "real"]
+KekProviderName = Literal["env", "aws-kms"]
 
 
 class Settings(BaseSettings):
@@ -29,6 +30,11 @@ class Settings(BaseSettings):
     oauth_state_cookie_name: str = "protos_oauth_state"
     oauth_state_ttl_seconds: int = 600
     frontend_url: str = "http://localhost:8080"
+
+    kek_provider: KekProviderName = "env"
+    secrets_master_key: str = ""
+    aws_kms_key_id: str = ""
+    aws_region: str = "us-east-1"
 
 
 @lru_cache(maxsize=1)

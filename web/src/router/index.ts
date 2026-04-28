@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory, type RouteLocationNormalized } from "vue-router";
 import HomePage from "@/pages/HomePage.vue";
 import LoginPage from "@/pages/LoginPage.vue";
+import ProviderKeysPage from "@/pages/ProviderKeysPage.vue";
+import ApiKeysPage from "@/pages/ApiKeysPage.vue";
 import { authLoaded, currentUser, loadCurrentUser } from "@/store/auth";
 
 export const router = createRouter({
@@ -8,6 +10,8 @@ export const router = createRouter({
   routes: [
     { path: "/login", name: "login", component: LoginPage, meta: { public: true } },
     { path: "/", name: "home", component: HomePage },
+    { path: "/keys/providers", name: "provider-keys", component: ProviderKeysPage },
+    { path: "/keys/platform", name: "api-keys", component: ApiKeysPage },
   ],
 });
 

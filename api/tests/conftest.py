@@ -1,3 +1,4 @@
+import base64
 import os
 from collections.abc import AsyncIterator
 
@@ -7,6 +8,8 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from app.db import Base, get_session
+
+TEST_MASTER_KEY = base64.b64encode(b"protos-test-master-key-32bytes!!").decode()
 
 
 @pytest.fixture(autouse=True)
@@ -24,14 +27,19 @@ def _set_test_env(monkeypatch):
     monkeypatch.setenv("APP_SESSION_SECRET", "test-secret-32-chars-minimum-aaaaaaaa")
     monkeypatch.setenv("APP_FRONTEND_URL", "http://test-frontend")
     monkeypatch.setenv("APP_API_PUBLIC_URL", "")
+    monkeypatch.setenv("APP_KEK_PROVIDER", "env")
+    monkeypatch.setenv("APP_SECRETS_MASTER_KEY", TEST_MASTER_KEY)
+    monkeypatch.setenv("APP_AWS_KMS_KEY_ID", "")
 
 
 @pytest_asyncio.fixture
 async def engine():
     from app.config import get_settings
+    from app.security.dependencies import reset_vault
     from app import models as _models  # noqa: F401
 
     get_settings.cache_clear()
+    reset_vault()
     eng = create_async_engine(get_settings().database_url, future=True)
     async with eng.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
@@ -62,3 +70,14 @@ async def client(engine) -> AsyncIterator[AsyncClient]:
     async with AsyncClient(transport=transport, base_url="http://test") as c:
         yield c
     app.dependency_overrides.clear()
+
+
+@pytest_asyncio.fixture
+async def authed_client(client: AsyncClient) -> AsyncClient:
+    from urllib.parse import parse_qs, urlparse
+
+    start = await client.get("/auth/google/start")
+    state = parse_qs(urlparse(start.headers["location"]).query)["state"][0]
+    callback = await client.get(f"/auth/google/callback?code=carol-g-1&state={state}")
+    assert callback.status_code == 302
+    return client
