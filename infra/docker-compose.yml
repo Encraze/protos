@@ -1,0 +1,83 @@
+name: protos
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: protos
+      POSTGRES_PASSWORD: protos
+      POSTGRES_DB: protos
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./postgres/init-test-db.sql:/docker-entrypoint-initdb.d/init-test-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U protos -d protos"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  minio:
+    image: minio/minio:RELEASE.2024-10-13T13-34-11Z
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: protos
+      MINIO_ROOT_PASSWORD: protosprotos
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+  api:
+    build:
+      context: ../api
+    volumes:
+      - ../api/alembic/versions:/app/alembic/versions
+    environment:
+      APP_ENVIRONMENT: dev
+      APP_DATABASE_URL: postgresql+asyncpg://protos:protos@postgres:5432/protos
+      APP_TEST_DATABASE_URL: postgresql+asyncpg://protos:protos@postgres:5432/protos_test
+      APP_LOG_LEVEL: INFO
+      APP_LOG_JSON: "true"
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+
+  web:
+    build:
+      context: ../web
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+
+volumes:
+  postgres-data:
+  redis-data:
+  minio-data:

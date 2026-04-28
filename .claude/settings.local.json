@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(uv --version)",
+      "Bash(docker --version)",
+      "Bash(pnpm --version)",
+      "Bash(python -m venv /tmp/probe-venv)",
+      "Read(//tmp/**)",
+      "Bash(rm -rf /tmp/probe-venv)",
+      "Bash(docker compose *)",
+      "Bash(curl -fsS http://localhost:8000/health)",
+      "Bash(curl -fsS http://localhost:8080/api/health)",
+      "Bash(curl -fsS http://localhost:8080/)",
+      "Bash(docker build *)",
+      "Bash(docker run *)"
+    ]
+  }
+}

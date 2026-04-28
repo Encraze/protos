@@ -1,0 +1,2 @@
+CREATE DATABASE protos_test;
+GRANT ALL PRIVILEGES ON DATABASE protos_test TO protos;
