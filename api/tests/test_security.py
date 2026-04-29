@@ -38,8 +38,8 @@ async def test_provider_key_secret_is_recoverable_through_vault(authed_client, s
         await session.execute(select(ProviderKey).where(ProviderKey.label == "prod-anthropic"))
     ).scalar_one()
 
-    from app.security.dependencies import get_vault
     from app.config import get_settings
+    from app.security.dependencies import get_vault
 
     vault = get_vault(get_settings())
     assert vault.decrypt(bytes(record.encrypted_secret)) == "sk-ant-XXXXXXXXXXXXXXXXXXXXXXXX"

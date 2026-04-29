@@ -52,6 +52,8 @@ services:
     build:
       context: ../api
     volumes:
+      - ../api/app:/app/app
+      - ../api/tests:/app/tests
       - ../api/alembic/versions:/app/alembic/versions
     environment:
       APP_ENVIRONMENT: dev

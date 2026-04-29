@@ -36,6 +36,24 @@ class Settings(BaseSettings):
     aws_kms_key_id: str = ""
     aws_region: str = "us-east-1"
 
+    proxy_timeout_connect_seconds: float = 5.0
+    proxy_timeout_read_seconds: float = 60.0
+    proxy_timeout_total_seconds: float = 120.0
+    proxy_max_retries: int = 2
+    proxy_retry_initial_backoff_ms: int = 250
+    proxy_sse_keepalive_seconds: float = 15.0
+
+    pricing_source_priority: list[str] = ["openrouter", "litellm"]
+    pricing_refresh_on_startup: bool = True
+    openrouter_models_url: str = "https://openrouter.ai/api/v1/models"
+    litellm_pricing_url: str = (
+        "https://raw.githubusercontent.com/BerriAI/litellm/main/"
+        "model_prices_and_context_window_backup.json"
+    )
+
+    anthropic_count_tokens_cache_ttl_seconds: int = 300
+    gemini_count_tokens_cache_ttl_seconds: int = 300
+
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:

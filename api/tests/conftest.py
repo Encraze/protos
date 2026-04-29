@@ -34,12 +34,16 @@ def _set_test_env(monkeypatch):
 
 @pytest_asyncio.fixture
 async def engine():
-    from app.config import get_settings
-    from app.security.dependencies import reset_vault
     from app import models as _models  # noqa: F401
+    from app.config import get_settings
+    from app.pricing.dependencies import reset_vendor_catalog
+    from app.proxy.router import reset_service
+    from app.security.dependencies import reset_vault
 
     get_settings.cache_clear()
     reset_vault()
+    reset_vendor_catalog()
+    reset_service()
     eng = create_async_engine(get_settings().database_url, future=True)
     async with eng.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)

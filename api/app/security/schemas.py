@@ -25,7 +25,7 @@ class ProviderKeyResponse(BaseModel):
 
 class ApiKeyCreate(BaseModel):
     name: str = Field(min_length=1, max_length=120)
-    scopes: list[str] = Field(default_factory=list)
+    scopes: list[str] = Field(default_factory=lambda: ["chat:write"])
     mode: ApiKeyMode = ApiKeyMode.LIVE
     expires_at: datetime | None = None
 
