@@ -36,10 +36,3 @@ make test-api                 # pytest in api container
 make test-web                 # vitest
 make shell-api                # bash inside api container
 ```
-
-## Docs
-
-- `docs/tech-task.txt` — original product spec.
-- `docs/spec-addons.md` — gap-analysis additions.
-- `docs/design-system.md` — UI tokens, components, patterns.
-- `docs/superpowers/plans/2026-04-28-stage-1-meta.md` — Stage 1 roadmap.
